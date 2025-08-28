@@ -1,0 +1,13 @@
+# Ignore environment variable file
+.env
+
+# Node modules folder
+node_modules/
+
+# Playwright test videos and screenshots (optional)
+test-results/
+videos/
+screenshots/
+
+# TypeScript build files
+dist/
