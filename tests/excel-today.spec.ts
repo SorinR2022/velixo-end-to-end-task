@@ -14,6 +14,7 @@ test('Verifying TODAY() returns the expected date', async ({ page }) => {
   await excelPage.closePopup();
   await excelPage.autoFitFirstColumnViaContextMenu();
   await page.waitForTimeout(500);
+ 
   const cellValue = await excelPage.getCellValueViaClipboard();
 
   const today = new Date();

@@ -1,12 +1,51 @@
 # Velixo End-to-End Test Automation
 
-This repository contains an end-to-end automated test using **Playwright** and **TypeScript** to validate that the **Excel Online `=TODAY()`** formula returns the expected date value.  
+This repository contains an end-to-end automated test using Playwright and TypeScript to validate that the Excel Online `=TODAY()` formula returns the expected date value.  
 
 The test covers login, workbook creation, formula entry, UI interactions, and clipboard validation.
 
 ---
+## Project Structure
 
-##  Table of Contents
+The repository has the following structure:
+
+```
+VELIXO-END-TO-END-TASK/
+│
+├─ config/
+│  └─ credentials.ts        # Stores login credentials imported from .env
+│
+├─ pages/
+│  ├─ ExcelPage.ts          # Handles Excel page actions and clipboard interactions
+│  └─ LoginPage.ts          # Handles Microsoft 365 login
+│
+├─ tests/
+│  └─ excel-today.spec.ts   # End-to-end test verifying =TODAY() in Excel
+│
+├─ test-results/            # Playwright test outputs, videos, and screenshots
+│
+├─ .env                     # Environment variables file (not committed)
+├─ .gitignore               # Git ignore rules
+├─ package.json             # Project dependencies and scripts
+├─ package-lock.json        # Auto-generated lock file
+├─ playwright.config.ts     # Playwright configuration file
+├─ README.md                # This README file
+└─ tsconfig.json            # TypeScript configuration
+```
+
+> **Important:** You must create a `.env` file in the project root with your credentials:
+
+```
+EXCEL_URL=https://office.com
+EXCEL_USERNAME=your-email@example.com
+EXCEL_PASSWORD=your-password
+```
+
+This `.env` file is required for the tests to run correctly.
+
+
+
+## Table of Contents
 - Project Overview
 - Features
 - Prerequisites
@@ -20,43 +59,44 @@ The test covers login, workbook creation, formula entry, UI interactions, and cl
 
 ---
 
-##  Project Overview
+## Project Overview
 
 This project automates testing Excel Online through Microsoft 365, specifically verifying the `=TODAY()` function result.  
 
-The test:
-- Logs into Microsoft 365 using credentials from a configurable `.env` file.
-- Opens the Excel tab and creates a new workbook.
-- Enters the `=TODAY()` formula in cell **A1**.
-- Handles Excel UI popups gracefully.
-- Auto-fits the first column via Excel’s right-click context menu.
-- Copies the cell content via clipboard and validates the date returned matches today’s actual date in the **DD/MM/YYYY** format.
+The test performs the following steps:
+
+1. Logs into Microsoft 365 using credentials from a `.env` file.  
+2. Opens the Excel tab and creates a new workbook.  
+3. Enters the `=TODAY()` formula in cell A1.  
+4. Handles Excel UI popups gracefully.  
+5. Auto-fits the first column via Excel’s context menu.  
+6. Copies the cell content via clipboard and validates the date matches today's system date in DD/MM/YYYY format.
 
 ---
 
-##  Features
+## Features
 
 - Externalized configuration: Login URL, username, and password stored securely in `.env`.  
-- Playwright test framework: Using Playwright Test runner with page object pattern.  
-- Video recording: Tests run in headed Chromium mode with videos recorded for diagnostics.  
-- Cross-platform clipboard handling: Supports macOS and Windows key modifiers.  
-- Specific date format validation: Expects clipboard date string in **DD/MM/YYYY** format exactly.  
-- UI robustness: Waits and retries to ensure Excel’s clipboard data is ready.  
+- Page Object Model: `LoginPage` and `ExcelPage` separate UI interactions from test logic.  
+- Playwright Test framework: End-to-end automation with assertions and waiting mechanisms.  
+- Video recording: Tests can be configured to record video for diagnostics.  
+- Clipboard validation: Reads cell value via clipboard, with retry logic for robustness.  
+- Date format verification: Ensures DD/MM/YYYY format exactly.  
 
 ---
 
-##  Prerequisites
+## Prerequisites
 
-- Node.js (version 18 or later recommended)  
+- Node.js 18 or later  
 - npm (Node package manager)  
 - Microsoft 365 account with Excel Online access  
-- Access to the browser environment (headful Chrome used by default)  
+- Access to Chrome browser (headful mode recommended for debugging)  
 
 ---
 
-##  Configuration
+## Configuration
 
-1. Create a `.env` file in your project root with the following entries:
+1. Create a `.env` file in the project root:
 
 ```
 EXCEL_URL=https://office.com
@@ -64,11 +104,11 @@ EXCEL_USERNAME=your-email@example.com
 EXCEL_PASSWORD=your-password
 ```
 
-2. The project uses dotenv to load these securely into the test runtime.
+2. Credentials are imported into the tests via `config/credentials.ts`.  
 
 ---
 
-##  Installation
+## Installation
 
 1. Clone the repository:
 
@@ -83,11 +123,11 @@ cd velixo-end-to-end-task
 npm install
 ```
 
-3. Ensure your `.env` file is correctly configured.
+3. Ensure `.env` is correctly configured.  
 
 ---
 
-##  Running Tests
+## Running Tests
 
 Execute tests with:
 
@@ -95,78 +135,88 @@ Execute tests with:
 npx playwright test
 ```
 
-- Runs in headed Chrome with video capture enabled.  
-- Videos saved automatically in test-results folder.  
-- To run headless (without UI), update `playwright.config.ts` (set `headless: true`).  
+Optional commands:
+
+- Run tests in headed mode:
+
+```
+npx playwright test --headed
+```
+
+- View test report:
+
+```
+npx playwright show-report
+```
+
+Tests run in Chrome by default. Video recording can be enabled via `playwright.config.ts`.
 
 ---
 
-##  Test Structure
+## Test Structure
 
-- Page Objects:  
-  - `LoginPage.ts` — handles sign-in to Microsoft 365 using `.env` credentials.  
-  - `ExcelPage.ts` — manages Excel tab, workbook, formula entry, popup handling, context menu, and clipboard logic.  
+- Page Objects:
+  - `LoginPage.ts` — handles Microsoft 365 login.  
+  - `ExcelPage.ts` — handles Excel tab, workbook creation, formula entry, popup handling, context menu actions, and clipboard retrieval.
 
-- Test Script:  
-  - `excel-today.spec.ts` — verifies `=TODAY()` result matches system current date in **DD/MM/YYYY** format.  
+- Test Script:
+  - `excel-today.spec.ts` — verifies that `=TODAY()` in cell A1 matches the system date.
 
-- Config & Setup:  
-  - `playwright.config.ts` — Playwright runner config including browser and clipboard permissions.  
-  - `.env` — sensitive credentials externalized.  
-  - `tsconfig.json` — TypeScript compiler configuration.  
-
----
-
-##  Known Limitations and Workarounds
-
-- Clipboard timing issues: Excel Online may delay clipboard availability; solved with retries and waits in `ExcelPage.getCellValueViaClipboard`.  
-- Locale date format: This project **specifically expects DD/MM/YYYY** from clipboard and validates only this format (adjustment needed for other locales).  
-- Popup UI variations: Generic popup close method covers common cases; may require updates if Excel UI changes.  
-- Browser permissions: Clipboard access requires explicit enablement in Playwright config.  
-- Browser selection: Currently Chromium with Chrome channel; configurable in `playwright.config.ts`.  
-- Known bottlenecks: Microsoft UI changes may break selectors. Login may require extra steps (2FA).  
+- Config & Setup:
+  - `config/credentials.ts` — externalized login credentials.  
+  - `tsconfig.json` — TypeScript compiler options.  
+  - `package.json` — dependencies and scripts.  
 
 ---
 
-##  Alternative Approaches
+## Known Limitations and Workarounds
 
-- Use API-based Excel manipulation libraries like **ExcelJS** for faster, UI-independent testing.  
-- Use **Microsoft Graph API** for backend Excel automation if preferred.  
+- Clipboard timing: Excel Online may delay copying → handled with retry logic in `ExcelPage.getCellValueViaClipboard`.  
+- Locale: This test assumes DD/MM/YYYY format; other locales may require adjustment.  
+- Popups: Only common Excel popups are handled; UI changes may require selector updates.  
+- Hard-coded positions: Auto-fit column uses fixed canvas coordinates, which may fail on different resolutions.  
+- 2FA / Login: If your Microsoft 365 account has 2FA, manual intervention may be required.  
 
 ---
 
-##  Demo Recording and FAQ
+## Alternative Approaches
+
+- Use ExcelJS or Microsoft Graph API for non-UI, backend Excel automation.  
+- API-based testing can be faster and less brittle than UI automation.  
+
+---
+
+## Demo Recording and FAQ
 
 ### How to run the test?
 
 - Configure `.env` with valid credentials.  
-- Run `npx playwright test` from your shell.  
+- Run `npx playwright test`.  
 - Test performs login, Excel automation, formula entry, and validation automatically.  
-- Videos recorded and saved under `test-results` directory.  
+- Recorded videos (if enabled) are saved in the `test-results` directory.
 
-### Known bottlenecks?
+### Known bottlenecks
 
-- Clipboard readiness delays require retry logic.  
-- UI selectors might need update with Microsoft UI changes.  
-- Microsoft UI changes may break selectors. Login may require extra steps (2FA).  
+- Clipboard readiness may require retries.  
+- UI selectors may break if Microsoft changes Excel Online interface.  
+- Login may require extra steps (2FA).  
 
-### Workarounds?
+### Workarounds
 
-- Adjust retry timeouts in `ExcelPage` as needed.  
-- Update selectors for popups and menu options upon UI updates.  
-
-### Alternative solutions?
-
-- Consider non-UI Excel libraries or APIs for backend automation.  
+- Adjust retry logic in `ExcelPage`.  
+- Update selectors if UI changes.  
+- Use backend automation for more reliable, faster tests.
 
 ---
 
 ## Summary
 
-This setup provides an end-to-end Playwright test validating **Excel Online `=TODAY()`** with:  
-- Specific **DD/MM/YYYY** format support  
-- External configuration  
-- Robust retry logic  
-- Video capture for debugging  
+This project provides an end-to-end Playwright test for Excel Online `=TODAY()`, including:
 
----
+- Login via Microsoft 365  
+- Workbook creation and formula entry  
+- Clipboard-based date validation (DD/MM/YYYY)  
+- Robust retry logic and error handling  
+- Video recording for debugging  
+
+Implemented in TypeScript, following the Page Object Model, and using a configuration file for credentials. Fully meets project requirements.

@@ -6,9 +6,9 @@ export default defineConfig({
     channel: "chrome",
     headless: false,
     video: "on",
-    viewport: null, // Let the browser use full window size
+    viewport: null,
     launchOptions: {
-      args: ["--start-maximized"], // Launch browser maximized
+      args: ["--start-maximized"],
     },
     permissions: ["clipboard-read", "clipboard-write"],
   },

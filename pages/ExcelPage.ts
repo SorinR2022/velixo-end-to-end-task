@@ -43,7 +43,7 @@ export class ExcelPage {
     await this.excelPage.keyboard.type('=TODAY()');
     await this.excelPage.keyboard.press('Enter');
 
-    await this.excelPage.waitForTimeout(1000); // Could improve to explicit wait on value change
+    await this.excelPage.waitForTimeout(1000);
   }
 
   async closePopup(): Promise<void> {
