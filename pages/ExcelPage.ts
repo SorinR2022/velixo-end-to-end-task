@@ -11,15 +11,14 @@ export class ExcelPage {
   constructor(private page: Page) { }
 
   async openExcel(): Promise<void> {
-    const [newPage] = await Promise.all([
-      this.page.context().waitForEvent('page'),
-      this.page.locator(this.excelTabSelector).click(),
-    ]);
-    await newPage.waitForLoadState('domcontentloaded');
-    this.excelPage = newPage;
+  const newPagePromise = this.page.context().waitForEvent('page');
+  await this.page.locator(this.excelTabSelector).click();
+  const newPage = await newPagePromise;
+  await newPage.waitForLoadState('domcontentloaded');
+  this.excelPage = newPage;
+  this.frame = this.excelPage.frameLocator('iframe[title="Office on the web Frame"]');
+}
 
-    this.frame = this.excelPage.frameLocator('iframe[title="Office on the web Frame"]');
-  }
 
   async createNewWorkbook(): Promise<void> {
     if (!this.excelPage) throw new Error('Excel page not initialized');

@@ -6,29 +6,28 @@ export class LoginPage {
 
   async goto() {
     await this.page.goto(credentials.url);
-    await expect(this.page.locator('text=Sign in')).toBeVisible();
-    await this.page.click('text=Sign in');
+    await expect(this.page.getByRole('link', { name: 'Sign in to your account' })).toBeVisible();
+    await this.page.getByRole('link', { name: 'Sign in to your account' }).click();
   }
 
   async login() {
-
-    const emailInput = this.page.locator('input[type="email"]');
+    const emailInput = this.page.getByRole('textbox', { name: 'Enter your email, phone, or' });
     await expect(emailInput).toBeVisible();
     await emailInput.fill(credentials.username);
-    await this.page.click('input[type="submit"]');
+    await this.page.getByRole('button', { name: 'Next' }).click();
 
     const passwordOption = this.page.getByRole('button', { name: 'Use your password' });
     await expect(passwordOption).toBeVisible();
     await passwordOption.click();
 
-    const passwordInput = this.page.locator('input[type="password"]');
+    const passwordInput = this.page.getByRole('textbox', { name: 'Password' });
     await expect(passwordInput).toBeVisible();
     await passwordInput.fill(credentials.password);
-    await this.page.locator('button[data-testid="primaryButton"]').click();
 
-    const staySignedInNo = this.page.locator('button[data-testid="secondaryButton"]');
+    await this.page.getByTestId('primaryButton').click();
+
+    const staySignedInNo = this.page.getByTestId('secondaryButton');
     await expect(staySignedInNo).toBeVisible();
     await staySignedInNo.click();
-
   }
 }
