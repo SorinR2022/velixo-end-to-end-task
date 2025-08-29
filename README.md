@@ -49,8 +49,8 @@ This `.env` file is required for the tests to run correctly.
 - Project Overview
 - Features
 - Prerequisites
-- Configuration
 - Installation
+- Configuration
 - Running Tests
 - Test Structure
 - Known Limitations and Workarounds
@@ -94,6 +94,25 @@ The test performs the following steps:
 
 ---
 
+## Installation
+
+1. Clone the repository:
+
+```
+git clone https://github.com/SorinR2022/velixo-end-to-end-task.git
+cd velixo-end-to-end-task
+```
+
+2. Install dependencies:
+
+```
+npm install
+```
+
+3. Ensure `.env` is correctly configured.  
+
+---
+
 ## Configuration
 
 1. Create a `.env` file in the project root:
@@ -105,25 +124,6 @@ EXCEL_PASSWORD=your-password
 ```
 
 2. Credentials are imported into the tests via `config/credentials.ts`.  
-
----
-
-## Installation
-
-1. Clone the repository:
-
-```
-git clone https://github.com/yourusername/velixo-end-to-end-task.git
-cd velixo-end-to-end-task
-```
-
-2. Install dependencies:
-
-```
-npm install
-```
-
-3. Ensure `.env` is correctly configured.  
 
 ---
 
